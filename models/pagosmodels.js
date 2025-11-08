@@ -10,7 +10,8 @@ export async function obtenerPagos() {
 }
 
 export async function obtenerPagosUsuario(usuarioId) {
-  const [rows] = await pool.query(`
+  const [rows] = await pool.query(
+    `
     select 
       id as id_pago,
       monto,
@@ -20,29 +21,50 @@ export async function obtenerPagosUsuario(usuarioId) {
     from pagos
     where usuario_id = ?
     order by fecha_pago desc
-  `, [usuarioId]);
+  `,
+    [usuarioId]
+  );
   return rows;
 }
 
-export async function registrarPago({ usuario_id, monto, fecha_pago, fecha_vencimiento, metodo }) {
-  // Si no viene fecha_pago, usar la fecha actual
+export async function registrarPago({
+  usuario_id,
+  monto,
+  fecha_pago,
+  fecha_vencimiento,
+  metodo,
+}) {
   const fechaPago = fecha_pago ? new Date(fecha_pago) : new Date();
 
-  // Si no viene fecha_vencimiento, calcular 30 días después
   const fechaVenc = fecha_vencimiento
     ? new Date(fecha_vencimiento)
-    : new Date(fechaPago.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 días
+    : new Date(fechaPago.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  // Formatear las fechas a YYYY-MM-DD para MySQL
-  const formatDate = (date) => date.toISOString().split('T')[0];
+  const formatDate = (date) => date.toISOString().split("T")[0];
 
-  // Método por defecto
   const metodoPago = metodo || "efectivo";
 
-  const [result] = await pool.query(`
+  const [result] = await pool.query(
+    `
     insert into pagos (usuario_id, monto, fecha_pago, fecha_vencimiento, metodo)
     values (?, ?, ?, ?, ?)
-  `, [usuario_id, monto, formatDate(fechaPago), formatDate(fechaVenc), metodoPago]);
+  `,
+    [
+      usuario_id,
+      monto,
+      formatDate(fechaPago),
+      formatDate(fechaVenc),
+      metodoPago,
+    ]
+  );
+
+  await pool.query(
+    `
+    update usuarios set estado = 'activo'
+    where id = ?
+  `,
+    [usuario_id]
+  );
 
   return {
     id: result.insertId,
@@ -55,15 +77,19 @@ export async function registrarPago({ usuario_id, monto, fecha_pago, fecha_venci
 }
 
 export async function eliminarPago(id) {
-  await pool.query(`
+  await pool.query(
+    `
     delete from pagos where id = ?
-  `, [id]);
+  `,
+    [id]
+  );
 
   return { mensaje: "Pago eliminado" };
 }
 
 export async function verificarEstadoUsuario(usuario_id) {
-  const [rows] = await pool.query(`
+  const [rows] = await pool.query(
+    `
     select 
       case 
         when fecha_vencimiento >= curdate() then 'activo'
@@ -73,7 +99,9 @@ export async function verificarEstadoUsuario(usuario_id) {
     where usuario_id = ?
     order by fecha_vencimiento desc
     limit 1
-  `, [usuario_id]);
+  `,
+    [usuario_id]
+  );
 
-  return rows[0] || { estado: 'sin pagos' };
+  return rows[0] || { estado: "sin pagos" };
 }
