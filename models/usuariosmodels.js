@@ -13,7 +13,7 @@ export async function obtenerUsuario({ id }) {
 export async function crearUsuario({ nombre, email, fecha_nacimiento }) {
   const [result] = await pool.query(
     `INSERT INTO usuarios (nombre, email, fecha_nacimiento, estado)
-     VALUES (?, ?, ?, 'activo')`,
+     VALUES (?, ?, ?, 'inactivo')`,
     [nombre, email, fecha_nacimiento]
   );
 
