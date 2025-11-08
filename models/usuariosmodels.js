@@ -22,7 +22,7 @@ export async function crearUsuario({ nombre, email, fecha_nacimiento }) {
     nombre,
     email,
     fecha_nacimiento,
-    estado: "activo",
+    estado: "inactivo",
   };
 }
 
