@@ -17,14 +17,18 @@ export async function getPagos(req, res) {
 }
 
 export async function getPagoUsuario(req, res) {
-    try {
-        const pago = await obtenerPagosUsuario(req.params.id)
-        res.json(pago)
-        if (!pago) return res.status(404).json({ error: 'Pago no encontrado' });
-    } catch (error) {
-        console.error("Pago no encontrado")
-        res.status(500).json({message: "Error al obtener el pago"})
+  try {
+    const pago = await obtenerPagosUsuario(req.params.id);
+
+    if (!pago || pago.length === 0) {
+      return res.status(404).json({ error: 'Pago no encontrado' });
     }
+
+    res.json(pago);
+  } catch (error) {
+    console.error("Error al obtener el pago:", error);
+    res.status(500).json({ message: "Error al obtener el pago" });
+  }
 }
 
 export async function postNuevoPago(req, res) {
