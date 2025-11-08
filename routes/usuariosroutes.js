@@ -29,11 +29,7 @@ router.post("/api/usuarios", validarcreacionusuario, registrousuario);
 router.put("/api/usuarios/:id", validaractualizacion, actualizarusuario);
 // http://localhost:5040/api/usuarios/123
 
-router.patch(
-  "/api/usuarios/:id/estado",
-  validarcambioestado,
-  cambiarestadousuario
-);
+router.patch("/api/usuarios/:id/estado",validarcambioestado, cambiarestadousuario);
 // http://localhost:5040/api/usuarios/123/estado
 
 router.delete("/api/usuarios/:id", validareliminarusuario, eliminarusuario);
