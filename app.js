@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 // import lecturasRoutes from './routes/lecturasroutes.js';
-// import pagosRoutes from './routes/pagosroutes.js';
+import pagosRoutes from './routes/pagosroutes.js';
 import usuariosRoutes from './routes/usuariosroutes.js';
 
 const app = express();
@@ -10,7 +10,7 @@ app.use(express.json());
 
 
 // app.use(lecturasRoutes);
-// app.use(pagosRoutes);
+app.use(pagosRoutes);
 app.use(usuariosRoutes);
 
 
