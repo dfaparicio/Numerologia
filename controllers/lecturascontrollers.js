@@ -17,8 +17,8 @@ const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 export async function respuestaIA(prompt) {
   try {
     const result = await model.generateContent(prompt);
-    const response = await result.response;             
-    return response.text();                             
+    const response = result.response;
+    return response.text();
   } catch (error) {
     console.error("❌ Error al consultar Gemini:", error);
     return "Ocurrió un error al interpretar el texto.";
