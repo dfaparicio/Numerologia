@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "a7b1e5b0-2348-4e61-bfd9-832b59f70b50",
     "name": "API MySQL NodeJS",
-    "description": "Colección de endpoints para la API de Usuarios y Pagos (Node.js + MySQL)",
+    "description": "Colección de endpoints para la API de Usuarios, Pagos y Lecturas (Node.js + MySQL)",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "chatgpt"
   },
@@ -177,11 +177,72 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5040/api/usuarios/1",
+              "raw": "http://localhost:5040/api/pagos/estado/1",
               "protocol": "http",
               "host": ["localhost"],
               "port": "5040",
-              "path": ["api", "usuarios", "1"]
+              "path": ["api", "pagos", "estado", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Lecturas",
+      "item": [
+        {
+          "name": "Generar lectura principal",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5040/api/lecturas/principal/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5040",
+              "path": ["api", "lecturas", "principal", "1"]
+            }
+          }
+        },
+        {
+          "name": "Generar lectura diaria",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5040/api/lecturas/diaria/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5040",
+              "path": ["api", "lecturas", "diaria", "1"]
+            }
+          }
+        },
+        {
+          "name": "Obtener lecturas de un usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5040/api/lecturas/usuario/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5040",
+              "path": ["api", "lecturas", "usuario", "1"]
+            }
+          }
+        },
+        {
+          "name": "Obtener lectura por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5040/api/lecturas/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5040",
+              "path": ["api", "lecturas", "1"]
             }
           }
         }
