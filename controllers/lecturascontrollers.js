@@ -9,19 +9,21 @@ import {
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import 'dotenv/config';
 
+console.log("🔑 GEMINI_API_KEY:", process.env.GEMINI_API_KEY ? "Cargada ✅" : "No cargada ❌");
+
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // usa 1.5, no 2.5
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // usa 1.5-flash, no 2.5
 
 export async function respuestaIA(prompt) {
   try {
     const consulta = await model.generateContent(prompt);
-    const text = consulta.response.text();
-    return text;
+    return consulta.response.text();
   } catch (error) {
-    console.error("Error al consultar Gemini:", error);
+    console.error("❌ Error al consultar Gemini:", error);
     return "Ocurrió un error al interpretar el texto.";
   }
 }
+
 
 
 // ========================================
