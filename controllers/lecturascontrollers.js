@@ -176,7 +176,7 @@ reflexión y energía para el día de hoy.
 
     const contenido = await respuestaIA(prompt);
 
-    const idLectura = await resultado.crear(usuario_id, "LECTURA DIARIA", contenido);
+    const idLectura = await resultado.crear(usuario_id, "diaria", contenido);
 
     res.status(201).json({
       msg: "Lectura diaria generada con base en la lectura principal.",
