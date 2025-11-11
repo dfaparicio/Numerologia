@@ -1,4 +1,5 @@
 import pool from "../config/db.js";
+import cron from "node-cron";
 
 export async function obtenerPagos() {
   const [rows] = await pool.query(`
@@ -105,3 +106,36 @@ export async function verificarEstadoUsuario(usuario_id) {
 
   return rows[0] || { estado: "sin pagos" };
 }
+
+export async function verificarPagosVencidos() {
+  try {
+    const [resultados] = await conexion.query(`
+      SELECT u.id, u.nombre, u.estado, MAX(p.fecha_vencimiento) AS fecha_vencimiento
+      FROM usuarios u
+      LEFT JOIN pagos p ON u.id = p.usuario_id
+      GROUP BY u.id
+    `);
+
+      const hoy = new Date();
+
+  for (const usuario of resultados) {
+    if (!usuario.fecha_vencimiento) continue;
+
+    const vencimiento = new Date(usuario.fecha_vencimiento);
+
+    if (vencimiento < hoy && usuario.estado === "activo") {
+      await conexion.query(
+        "UPDATE usuarios SET estado = 'inactivo' WHERE id = ?",
+        [usuario.id]
+      );
+    }
+  }
+
+  } catch (error) {
+    console.error("❌ Error al verificar pagos vencidos:", error);
+  }
+}
+
+cron.schedule("0 0 * * *", () => {
+  verificarPagosVencidos();
+});
