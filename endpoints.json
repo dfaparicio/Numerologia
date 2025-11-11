@@ -177,11 +177,11 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:5040/api/pagos/estado/1",
+              "raw": "http://localhost:5040/api/pago/estado/1",
               "protocol": "http",
               "host": ["localhost"],
               "port": "5040",
-              "path": ["api", "pagos", "estado", "1"]
+              "path": ["api", "pago", "estado", "1"]
             }
           }
         }
