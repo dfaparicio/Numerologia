@@ -1,7 +1,7 @@
 import pool from "../config/db.js";
 
 export async function lecturaPrincipal(usuario_id) {
-  const [usuario] = await pool.query("SELECT * FROM usuario WHERE id = ?", [
+  const [usuario] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [
     usuario_id,
   ]);
   if (!usuario.length) return { usuario: null };
@@ -27,7 +27,7 @@ export async function lecturaPrincipal(usuario_id) {
 }
 
 export async function lecturaDiaria(usuario_id) {
-  const [usuario] = await pool.query("SELECT * FROM usuario WHERE id = ?", [usuario_id]);
+  const [usuario] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [usuario_id]);
   if (!usuario.length) return { usuario: null };
 
   async function crear(usuario_id, tipo, contenido) {
