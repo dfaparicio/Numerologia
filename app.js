@@ -3,7 +3,6 @@ import cors from 'cors';
 import lecturasRoutes from './routes/lecturasroutes.js';
 import pagosRoutes from './routes/pagosroutes.js';
 import usuariosRoutes from './routes/usuariosroutes.js';
-import 'dotenv/config';
 
 
 const app = express();

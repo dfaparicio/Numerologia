@@ -7,14 +7,16 @@ import {
 
 /************** IA ***************/
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import 'dotenv/config';
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" }); // usa 1.5, no 2.5
 
 export async function respuestaIA(prompt) {
   try {
     const consulta = await model.generateContent(prompt);
-    return consulta.response.text();
+    const text = consulta.response.text();
+    return text;
   } catch (error) {
     console.error("Error al consultar Gemini:", error);
     return "Ocurrió un error al interpretar el texto.";
