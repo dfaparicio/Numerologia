@@ -27,8 +27,8 @@ router.post("/api/pago", validarRegistro, postNuevoPago);
 router.delete("/api/pago/:id", validarEliminacion, deletePago);
 // http://localhost:5040/api/pago/123
 
-router.get("/api/pago/:id", validarEstadoUsuario, getEstadoUsuario);
-// http://localhost:5040/api/usuarios/123
+router.get("/api/pago/estado/:id", validarEstadoUsuario, getEstadoUsuario);
+// http://localhost:5040/api/pago/estado/123
 
 export default router;
 
