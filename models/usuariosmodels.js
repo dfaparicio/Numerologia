@@ -43,8 +43,12 @@ export async function actualizarEstado(id, { estado }) {
 }
 
 export async function eliminarUsuario(id) {
+  
+  await pool.query("DELETE FROM lecturas WHERE usuario_id = ?", [id]);
+
   await pool.query("DELETE FROM usuarios WHERE id = ?", [id]);
-  return { mensaje: "Usuario eliminado" };
+
+  return { mensaje: "Usuario eliminado correctamente junto con sus lecturas" };
 }
 
 

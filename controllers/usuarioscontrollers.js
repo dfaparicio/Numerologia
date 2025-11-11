@@ -107,8 +107,8 @@ export async function cambiarestadousuario(req, res) {
 export async function eliminarusuario(req, res) {
   try {
     const { id } = req.params;
-    const usuario = await obtenerUsuario({ id });
 
+    const usuario = await obtenerUsuario({ id });
     if (!usuario) {
       return res.status(404).json({ msg: "Usuario no encontrado" });
     }
@@ -116,10 +116,11 @@ export async function eliminarusuario(req, res) {
     await eliminarUsuario(id);
 
     res.status(200).json({
-      msg: "Usuario eliminado correctamente",
+      msg: "Usuario y sus lecturas eliminados correctamente",
       usuario,
     });
   } catch (error) {
+    console.error("Error al eliminar usuario:", error);
     res.status(500).json({ error: "Error al eliminar el usuario" });
   }
 }

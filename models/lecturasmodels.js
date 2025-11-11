@@ -21,10 +21,11 @@ export async function lecturaPrincipal(usuario_id) {
 
   return {
     usuario: usuario[0],
-    existe: lecturaExistente.length > 0,
+    lecturaExistente: lecturaExistente[0] || null,
     crear,
   };
 }
+
 
 export async function lecturaDiaria(usuario_id) {
   const [usuario] = await pool.query("SELECT * FROM usuarios WHERE id = ?", [usuario_id]);
