@@ -21,6 +21,7 @@ export async function respuestaIA(prompt) {
   }
 }
 
+
 // ========================================
 // CÓMO CALCULAR TU NÚMERO DE CAMINO DE VIDA
 // ========================================
