@@ -38,5 +38,7 @@ Tu camino de vida es el 6.
 |  33 | Maestro del amor y la compasión universal         |
 
 
-
+validaciones 
+no dejar hacer varias lecturas principal
+validaciones usuarios
 
