@@ -103,40 +103,61 @@ export async function generarlecturaprincipal(req, res) {
       });
     }
 
- 
-    if (resultado.existe) {
+    if (resultado.lecturaExistente) {
       return res.status(200).json({
         msg: "La lectura principal ya fue generada previamente.",
-        numeroCamino: resultado.existe.numero_camino,
-        contenido: resultado.existe.contenido,
+        id: resultado.lecturaExistente.id,
+        numeroCamino: resultado.lecturaExistente.numero_camino || null,
+        contenido: JSON.parse(resultado.lecturaExistente.contenido),
       });
     }
 
-    const numeroCamino = calcularCaminoDeVida(
-      resultado.usuario.fecha_nacimiento
-    );
+    const numeroCamino = calcularCaminoDeVida(resultado.usuario.fecha_nacimiento);
 
     const prompt = `
-Eres un astrólogo y numerólogo experto. Genera una lectura espiritual personalizada
-para ${resultado.usuario.nombre}, nacido el ${resultado.usuario.fecha_nacimiento}.
-Su número de camino de vida según la numerología pitagórica es el ${numeroCamino}.
-Describe los principales rasgos, talentos y desafíos de este número de forma inspiradora.
+Eres un numerólogo profesional experto en numerología pitagórica. 
+Usa el siguiente número de Camino de Vida ya calculado con el método pitagórico:
+
+- Nombre: "${resultado.usuario.nombre}"
+- Número de Camino de Vida: ${numeroCamino}
+
+Genera una interpretación profunda, clara y totalmente personalizada basada EXCLUSIVAMENTE en numerología pitagórica.
+
+Devuelve ÚNICAMENTE un JSON VÁLIDO con la siguiente estructura EXACTA:
+
+{
+  "nombre": "${resultado.usuario.nombre}",
+  "numeroCamino": ${numeroCamino},
+  "descripcion": "",
+  "talentos": "",
+  "desafios": "",
+  "mensajeEspiritual": ""
+}
+
+REGLAS:
+- Cada campo debe contener entre 3 y 7 frases completas.
+- No menciones que eres una IA.
+- No inventes información que no provenga del número de Camino de Vida.
+- El contenido debe ser positivo, útil y fácil de comprender.
+- NO escribas nada fuera del JSON.
 `;
 
-    const contenido = await respuestaIA(prompt);
+    const contenidoIA = await respuestaIA(prompt);
+    const contenidoJSON = JSON.parse(contenidoIA);
 
     const idLectura = await resultado.crear(
       usuario_id,
       "principal",
-      contenido
+      JSON.stringify(contenidoJSON)
     );
 
     res.status(201).json({
-      msg: `Lectura principal generada con éxito para ${resultado.usuario.nombre}`,
+      msg: `Lectura principal generada con éxito.`,
       id: idLectura,
       numeroCamino,
-      contenido,
+      contenido: contenidoJSON,
     });
+
   } catch (error) {
     console.error("Error al generar lectura principal:", error);
     res.status(500).json({ msg: "Error interno del servidor" });
@@ -158,41 +179,71 @@ export async function generarlecturadiaria(req, res) {
         msg: "El usuario no está activo, no puede generar lectura diaria.",
       });
     }
-    const lecturaPrincipal = await resultado.obtenerLecturaPrincipal(
-      usuario_id
-    );
 
+    const lecturaPrincipal = await resultado.obtenerLecturaPrincipal(usuario_id);
     if (!lecturaPrincipal) {
       return res.status(400).json({
         msg: "Primero debes generar la lectura principal antes de crear la diaria.",
       });
     }
 
+    const lecturaHoy = await resultado.obtenerLecturaDiariaHoy(usuario_id);
+    if (lecturaHoy) {
+      return res.status(200).json({
+        msg: "La lectura diaria ya fue generada hoy.",
+        id: lecturaHoy.id,
+        contenido: JSON.parse(lecturaHoy.contenido),
+      });
+    }
+
     const prompt = `
-Eres un astrólogo numerólogo experto.
-Basándote en la siguiente lectura principal de ${resultado.usuario.nombre}:
+Eres un numerólogo experto.  
+Genera una lectura diaria basada en la energía principal del usuario, tomando como referencia la siguiente lectura principal (JSON):
+
 ---
 ${lecturaPrincipal.contenido}
 ---
-Genera una lectura diaria breve, positiva y personalizada
-que complemente la lectura anterior, brindando inspiración,
-reflexión y energía para el día de hoy.
+
+Usa numerología pitagórica para interpretar el día de hoy.
+
+Devuelve ÚNICAMENTE un JSON VÁLIDO con esta estructura EXACTA:
+
+{
+  "fecha": "${new Date().toISOString().split("T")[0]}",
+  "mensaje": "",
+  "energiaDelDia": "",
+  "consejo": ""
+}
+
+REGLAS:
+- El mensaje debe relacionarse con el Camino de Vida del usuario.
+- “energiaDelDia” debe hablar del tono vibracional del día (movimiento, claridad, introspección, creatividad, etc.).
+- “consejo” debe ser práctico y aplicable hoy.
+- No menciones que eres una IA.
+- NO escribas nada fuera del JSON.
 `;
 
-    const contenido = await respuestaIA(prompt);
+    const contenidoIA = await respuestaIA(prompt);
+    const contenidoJSON = JSON.parse(contenidoIA);
 
-    const idLectura = await resultado.crear(usuario_id, "diaria", contenido);
+    const idLectura = await resultado.crear(
+      usuario_id,
+      "diaria",
+      JSON.stringify(contenidoJSON)
+    );
 
     res.status(201).json({
-      msg: "Lectura diaria generada con base en la lectura principal.",
+      msg: "Lectura diaria generada exitosamente.",
       id: idLectura,
-      contenido,
+      contenido: contenidoJSON,
     });
+
   } catch (error) {
     console.error("Error al generar lectura diaria:", error);
     res.status(500).json({ msg: "Error interno del servidor." });
   }
 }
+
 
 export async function obtenerlecturasdeunusuario(req, res) {
   try {

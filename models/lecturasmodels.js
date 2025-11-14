@@ -44,10 +44,24 @@ export async function lecturaDiaria(usuario_id) {
       "SELECT * FROM lecturas WHERE usuario_id = ? AND tipo = 'principal' LIMIT 1",
       [usuario_id]
     );
-    return rows.length ? rows[0] : null; 
+    return rows.length ? rows[0] : null;
   }
 
-  return { usuario: usuario[0], crear, obtenerLecturaPrincipal };
+  async function obtenerLecturaDiariaHoy(usuario_id) {
+    const [rows] = await pool.query(
+      `
+      SELECT * FROM lecturas
+      WHERE usuario_id = ?
+      AND tipo = 'diaria'
+      AND DATE(fecha_lectura) = CURDATE()
+      LIMIT 1
+      `,
+      [usuario_id]
+    );
+    return rows.length ? rows[0] : null;
+  }
+
+  return { usuario: usuario[0], crear, obtenerLecturaPrincipal, obtenerLecturaDiariaHoy };
 }
 
 export async function lecturasdeUnUsuario(usuario_id) {
