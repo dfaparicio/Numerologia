@@ -42,6 +42,17 @@ export async function actualizarEstado(id, { estado }) {
   return { id, estado };
 }
 
+export async function tienemembresiaActiva(id) {
+  const [rows] = await pool.query(
+    `SELECT * FROM pagos 
+     WHERE usuario_id = ? 
+     AND fecha_vencimiento >= CURDATE()
+     LIMIT 1`,
+    [id]
+  );
+  return rows.length > 0;
+}
+
 export async function eliminarUsuario(id) {
   
   await pool.query("DELETE FROM lecturas WHERE usuario_id = ?", [id]);
@@ -50,8 +61,3 @@ export async function eliminarUsuario(id) {
 
   return { mensaje: "Usuario eliminado correctamente junto con sus lecturas" };
 }
-
-
-// Falta revisar 
-// Cambiar el estado del usuario 
-// a “activo” o “inactivo” según la membresía.

@@ -5,6 +5,7 @@ import {
   actualizarUsuario,
   actualizarEstado,
   eliminarUsuario,
+  tienemembresiaActiva
 } from "../models/usuariosmodels.js";
 
 export async function listarusuarios(req, res) {
@@ -19,7 +20,6 @@ export async function listarusuarios(req, res) {
       usuarios,
       total: usuarios.length,
     });
-    res.json(usuarios);
   } catch (error) {
     console.error("Error al obtener usuarios", error);
 
@@ -88,6 +88,16 @@ export async function cambiarestadousuario(req, res) {
     const usuario = await obtenerUsuario({ id });
     if (!usuario) {
       return res.status(404).json({ msg: "Usuario no encontrado" });
+    }
+
+    if (estado === "activo") {
+      const activo = await tienemembresiaActiva(id);
+
+      if (!activo) {
+        return res.status(400).json({
+          msg: "No se puede activar el usuario. No tiene una membresía vigente.",
+        });
+      }
     }
 
     await actualizarEstado(id, { estado });

@@ -12,11 +12,30 @@ export const validarbusquedaporid = [
 ];
 
 export const validarcreacionusuario = [
-  body("nombre").isString().notEmpty().withMessage("El nombre es obligatorio"),
+  body("nombre")
+    .isString()
+    .notEmpty()
+    .withMessage("El nombre es obligatorio"),
 
-  body("email").isEmail().withMessage("Debe ingresar un email válido"),
+  body("email")
+    .notEmpty()
+    .withMessage("El email es obligatorio")
+    .isEmail()
+    .withMessage("Debe ingresar un email válido")
+    .custom(async (value) => {
+      const [rows] = await pool.query(
+        "SELECT id FROM usuarios WHERE email = ?",
+        [value]
+      );
+      if (rows.length > 0) {
+        throw new Error("El email ya está registrado");
+      }
+      return true;
+    }),
 
   body("fecha_nacimiento")
+    .notEmpty()
+    .withMessage("La fecha es obligatoria")
     .isDate()
     .withMessage("La fecha de nacimiento debe tener formato YYYY-MM-DD"),
 
@@ -28,10 +47,17 @@ export const validaractualizacion = [
 
   body("nombre")
     .optional()
+    .notEmpty()
+    .withMessage("El nombre no puede estar vacío")
     .isLength({ min: 3 })
     .withMessage("El nombre debe al menos 3 caracteres"),
 
-  body("email").optional().isEmail().withMessage("Debe ser un email válido"),
+  body("email")
+    .optional()
+    .notEmpty()
+    .withMessage("El email no puede estar vacío")
+    .isEmail()
+    .withMessage("Debe ser un email válido"),
 
   body("fecha_nacimiento")
     .optional()
@@ -44,13 +70,17 @@ export const validaractualizacion = [
 ];
 
 export const validarcambioestado = [
-  param("id").isInt().withMessage("El ID debe ser un numero"),
+  param("id")
+    .isInt()
+    .withMessage("El ID debe ser un numero"),
 
   body("estado")
     .notEmpty()
     .withMessage("El estado es obligatorio")
     .isIn(["activo", "inactivo"])
     .withMessage('El estado debe ser "activo" o "inactivo"'),
+
+  validarCampos,
 ];
 
 export const validareliminarusuario = [
