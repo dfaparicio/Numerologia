@@ -1,5 +1,6 @@
 import { body, param } from "express-validator";
 import { validarCampos } from "./validateResults.js";
+import pool from "../config/db.js";
 
 export const validarbusquedaporid = [
   param("id")

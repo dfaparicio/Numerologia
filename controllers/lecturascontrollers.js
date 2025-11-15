@@ -5,11 +5,14 @@ import {
   lecturaPorId,
 } from "../models/lecturasmodels.js";
 
-/************** IA ***************/
+//IA
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import "dotenv/config";
 
-console.log("🔑 GEMINI_API_KEY:", process.env.GEMINI_API_KEY ? "Cargada ✅" : "No cargada ❌");
+console.log(
+  "🔑 GEMINI_API_KEY:",
+  process.env.GEMINI_API_KEY ? "Cargada ✅" : "No cargada ❌"
+);
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
@@ -24,8 +27,6 @@ export async function respuestaIA(prompt) {
     return "Ocurrió un error al interpretar el texto.";
   }
 }
-
-
 
 // ========================================
 // CÓMO CALCULAR TU NÚMERO DE CAMINO DE VIDA
@@ -52,12 +53,10 @@ export async function respuestaIA(prompt) {
 
 export function calcularCaminoDeVida(fecha_nacimiento) {
   const fecha = new Date(fecha_nacimiento);
-  const dia = fecha.getDate(); // Día de nacimiento (ej. 14)
-  const mes = fecha.getMonth() + 1; // Mes (0-based, por eso +1)
-  const año = fecha.getFullYear(); // Año completo (ej. 2001)
+  const dia = fecha.getDate(); 
+  const mes = fecha.getMonth() + 1;
+  const año = fecha.getFullYear(); 
 
-  // Función auxiliar para reducir un número a un solo dígito
-  // (excepto si es 11, 22 o 33 → números maestros)
   const reducir = (num) => {
     if ([11, 22, 33].includes(num)) return num;
     while (num > 9) {
@@ -69,7 +68,6 @@ export function calcularCaminoDeVida(fecha_nacimiento) {
     return num;
   };
 
-  // Reducción de cada parte de la fecha
   const diaReducido = reducir(dia);
   const mesReducido = reducir(mes);
   const añoReducido = reducir(
@@ -79,13 +77,29 @@ export function calcularCaminoDeVida(fecha_nacimiento) {
       .reduce((a, b) => a + parseInt(b), 0)
   );
 
-  // Suma total de los tres componentes
   const suma = diaReducido + mesReducido + añoReducido;
 
-  // Reducción final para obtener el número de Camino de Vida
   const caminoDeVida = reducir(suma);
 
   return caminoDeVida;
+}
+
+function extraerJSON(texto) {
+  const inicio = texto.indexOf("{");
+  const fin = texto.lastIndexOf("}");
+
+  if (inicio === -1 || fin === -1) {
+    throw new Error("La IA no devolvió un JSON válido.");
+  }
+
+  const jsonLimpio = texto.slice(inicio, fin + 1);
+
+  try {
+    return JSON.parse(jsonLimpio);
+  } catch (e) {
+    console.error("JSON devuelto por IA (corrupto):", jsonLimpio);
+    throw new Error("JSON inválido al parsear.");
+  }
 }
 
 export async function generarlecturaprincipal(req, res) {
@@ -112,18 +126,20 @@ export async function generarlecturaprincipal(req, res) {
       });
     }
 
-    const numeroCamino = calcularCaminoDeVida(resultado.usuario.fecha_nacimiento);
+    const numeroCamino = calcularCaminoDeVida(
+      resultado.usuario.fecha_nacimiento
+    );
 
     const prompt = `
 Eres un numerólogo profesional experto en numerología pitagórica. 
-Usa el siguiente número de Camino de Vida ya calculado con el método pitagórico:
+Usa el siguiente número de Camino de Vida ya calculado:
 
 - Nombre: "${resultado.usuario.nombre}"
 - Número de Camino de Vida: ${numeroCamino}
 
-Genera una interpretación profunda, clara y totalmente personalizada basada EXCLUSIVAMENTE en numerología pitagórica.
+Genera una interpretación profunda y totalmente personalizada.
 
-Devuelve ÚNICAMENTE un JSON VÁLIDO con la siguiente estructura EXACTA:
+Devuelve ÚNICAMENTE un JSON VÁLIDO con esta estructura EXACTA:
 
 {
   "nombre": "${resultado.usuario.nombre}",
@@ -137,13 +153,12 @@ Devuelve ÚNICAMENTE un JSON VÁLIDO con la siguiente estructura EXACTA:
 REGLAS:
 - Cada campo debe contener entre 3 y 7 frases completas.
 - No menciones que eres una IA.
-- No inventes información que no provenga del número de Camino de Vida.
-- El contenido debe ser positivo, útil y fácil de comprender.
 - NO escribas nada fuera del JSON.
 `;
 
     const contenidoIA = await respuestaIA(prompt);
-    const contenidoJSON = JSON.parse(contenidoIA);
+
+    const contenidoJSON = extraerJSON(contenidoIA);
 
     const idLectura = await resultado.crear(
       usuario_id,
@@ -157,13 +172,11 @@ REGLAS:
       numeroCamino,
       contenido: contenidoJSON,
     });
-
   } catch (error) {
     console.error("Error al generar lectura principal:", error);
     res.status(500).json({ msg: "Error interno del servidor" });
   }
 }
-
 
 export async function generarlecturadiaria(req, res) {
   try {
@@ -180,7 +193,9 @@ export async function generarlecturadiaria(req, res) {
       });
     }
 
-    const lecturaPrincipal = await resultado.obtenerLecturaPrincipal(usuario_id);
+    const lecturaPrincipal = await resultado.obtenerLecturaPrincipal(
+      usuario_id
+    );
     if (!lecturaPrincipal) {
       return res.status(400).json({
         msg: "Primero debes generar la lectura principal antes de crear la diaria.",
@@ -196,35 +211,33 @@ export async function generarlecturadiaria(req, res) {
       });
     }
 
+    const fechaHoy = new Date().toISOString().split("T")[0];
+
     const prompt = `
-Eres un numerólogo experto.  
-Genera una lectura diaria basada en la energía principal del usuario, tomando como referencia la siguiente lectura principal (JSON):
+Eres un numerólogo experto en numerología pitagórica.  
+Genera una lectura diaria basada en esta lectura principal:
 
 ---
 ${lecturaPrincipal.contenido}
 ---
 
-Usa numerología pitagórica para interpretar el día de hoy.
-
-Devuelve ÚNICAMENTE un JSON VÁLIDO con esta estructura EXACTA:
+Devuelve SOLO un JSON VÁLIDO con esta forma:
 
 {
-  "fecha": "${new Date().toISOString().split("T")[0]}",
+  "fecha": "${fechaHoy}",
   "mensaje": "",
   "energiaDelDia": "",
   "consejo": ""
 }
 
 REGLAS:
-- El mensaje debe relacionarse con el Camino de Vida del usuario.
-- “energiaDelDia” debe hablar del tono vibracional del día (movimiento, claridad, introspección, creatividad, etc.).
-- “consejo” debe ser práctico y aplicable hoy.
+- Todo debe relacionarse con la energía numerológica del usuario.
 - No menciones que eres una IA.
 - NO escribas nada fuera del JSON.
 `;
 
     const contenidoIA = await respuestaIA(prompt);
-    const contenidoJSON = JSON.parse(contenidoIA);
+    const contenidoJSON = extraerJSON(contenidoIA);
 
     const idLectura = await resultado.crear(
       usuario_id,
@@ -237,13 +250,11 @@ REGLAS:
       id: idLectura,
       contenido: contenidoJSON,
     });
-
   } catch (error) {
     console.error("Error al generar lectura diaria:", error);
     res.status(500).json({ msg: "Error interno del servidor." });
   }
 }
-
 
 export async function obtenerlecturasdeunusuario(req, res) {
   try {
@@ -271,16 +282,31 @@ export async function obtenerlecturaporid(req, res) {
     const { id } = req.params;
     const lectura = await lecturaPorId(id);
 
-    if (!lectura)
+    if (!lectura) {
       return res.status(404).json({ msg: "Lectura no encontrada." });
+    }
 
-    res.status(201).json({
-      msg: `Lecturas enocntradas del usuario ${lectura.usuario.nombre}`,
-      lectura,
-      numerolecturas: lectura.length,
+    let contenidoParseado = lectura.contenido;
+    try {
+      contenidoParseado =
+        typeof lectura.contenido === "string"
+          ? JSON.parse(lectura.contenido)
+          : lectura.contenido;
+    } catch (e) {
+      console.warn("Contenido no era JSON o estaba corrupto");
+    }
+
+    return res.status(200).json({
+      msg: `Lectura encontrada del usuario ${
+        lectura.usuario?.nombre || "desconocido"
+      }`,
+      lectura: {
+        ...lectura,
+        contenido: contenidoParseado,
+      },
     });
   } catch (error) {
     console.error("Error al obtener lectura:", error);
-    res.status(500).json({ msg: "Error interno del servidor" });
+    return res.status(500).json({ msg: "Error interno del servidor" });
   }
 }

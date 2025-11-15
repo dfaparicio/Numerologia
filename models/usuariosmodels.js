@@ -54,6 +54,8 @@ export async function tienemembresiaActiva(id) {
 }
 
 export async function eliminarUsuario(id) {
+
+  await pool.query("DELETE FROM pagos WHERE usuario_id = ?", [id]);
   
   await pool.query("DELETE FROM lecturas WHERE usuario_id = ?", [id]);
 
