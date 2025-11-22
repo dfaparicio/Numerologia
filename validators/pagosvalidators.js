@@ -27,6 +27,7 @@ export const validarPagoUsuario = [
   body("metodo")
     .isIn(["tarjeta", "efectivo", "transferencia"])
     .withMessage("El método de pago debe ser 'tarjeta', 'efectivo' o 'transferencia'"),
+
 ];
 
 export const validarRegistro = [
@@ -55,16 +56,19 @@ export const validarRegistro = [
   body("metodo")
     .isIn(["tarjeta", "efectivo", "transferencia"])
     .withMessage("El método de pago debe ser 'tarjeta', 'efectivo' o 'transferencia'"),
+
 ]
 
 export const validarEliminacion = [
   param("id")
     .isInt({ min: 1 })
     .withMessage("El ID debe ser un número entero positivo"),
+    
 ]
 
 export const validarEstadoUsuario = [
   param("id")
     .isInt({ min: 1 })
     .withMessage("El ID del usuario debe ser un número entero positivo"),
+
 ];

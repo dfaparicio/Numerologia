@@ -53,9 +53,9 @@ export async function respuestaIA(prompt) {
 
 export function calcularCaminoDeVida(fecha_nacimiento) {
   const fecha = new Date(fecha_nacimiento);
-  const dia = fecha.getDate(); 
+  const dia = fecha.getDate();
   const mes = fecha.getMonth() + 1;
-  const año = fecha.getFullYear(); 
+  const año = fecha.getFullYear();
 
   const reducir = (num) => {
     if ([11, 22, 33].includes(num)) return num;
@@ -121,7 +121,6 @@ export async function generarlecturaprincipal(req, res) {
       return res.status(200).json({
         msg: "La lectura principal ya fue generada previamente.",
         id: resultado.lecturaExistente.id,
-        numeroCamino: resultado.lecturaExistente.numero_camino || null,
         contenido: JSON.parse(resultado.lecturaExistente.contenido),
       });
     }
@@ -129,13 +128,12 @@ export async function generarlecturaprincipal(req, res) {
     const numeroCamino = calcularCaminoDeVida(
       resultado.usuario.fecha_nacimiento
     );
-
+    
     const prompt = `
 Eres un numerólogo profesional experto en numerología pitagórica. 
 Usa el siguiente número de Camino de Vida ya calculado:
 
 - Nombre: "${resultado.usuario.nombre}"
-- Número de Camino de Vida: ${numeroCamino}
 
 Genera una interpretación profunda y totalmente personalizada.
 
@@ -169,7 +167,6 @@ REGLAS:
     res.status(201).json({
       msg: `Lectura principal generada con éxito.`,
       id: idLectura,
-      numeroCamino,
       contenido: contenidoJSON,
     });
   } catch (error) {

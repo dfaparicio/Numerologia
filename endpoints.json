@@ -3,8 +3,7 @@
     "_postman_id": "a7b1e5b0-2348-4e61-bfd9-832b59f70b50",
     "name": "API MySQL NodeJS",
     "description": "Colección de endpoints para la API de Usuarios, Pagos y Lecturas (Node.js + MySQL)",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "chatgpt"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
@@ -146,7 +145,7 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"usuario_id\": 1,\n  \"monto\": 50000,\n  \"fecha_pago\": \"2025-11-08\"\n}"
+              "raw": "{\n  \"usuario_id\": 1,\n  \"monto\": 50000,\n  \"fecha_pago\": \"2025-11-08\",\n  \"fecha_vencimiento\": \"2025-12-08\",\n  \"metodo\": \"tarjeta\"\n}"
             },
             "url": {
               "raw": "http://localhost:5040/api/pago",
